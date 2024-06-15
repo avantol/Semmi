@@ -13,4 +13,5 @@
 <br>- reply automatically to CQs from any countries you worked but have not QSL'd yet
 <br>- view all stored CQ details: country, continent, distance, SNR, and azimuth
 <br>- have much more time to research callers on QRZ, PSKReporter, and LOTW...
-<br><br>Download and run Semmi.msi to install.
+<br><br>Download and run Semmi.msi to install:
+https://github.com/avantol/Semmi/blob/main/Semmi.msi
