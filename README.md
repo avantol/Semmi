@@ -3,6 +3,7 @@
  <br><br><i><b>Use all appropriate caution since transmit can start at any time once you select "Enable auto-reply"!!! Whenever the "Enable auto-reply" button is green, your antenna can be energized.</b></i>
  <br><br>Semmi runs alongside your existing version of WSJT-X (must use Windows 10 or later for reliability).
  <br><br>As a start, Semmi stores up "new" CQs (not worked before) that are interesting to you, and allows you to reply to each CQ, either manually or automatically.
+ <br><img src="https://github.com/avantol/Semmi/blob/main/Semmi.JPG">
 <br><br>You can also do things like:
 <br>- reply automatically to new CQs from local and/or DX stations
 <br>- reply automatically to new CQs from POTA stations
