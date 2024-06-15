@@ -9,5 +9,6 @@
 <br>- reply automatically to new CQs for the current band and/or mode
 <br>- reply automatically to CQs from new countries (and/or new for the current band)
 <br>- reply automatically to CQs from any countries you worked but have not QSL'd yet
-<br>- view all CQ details: country, continent, distance, SNR, and azimuth
+<br>- view all stored CQ details: country, continent, distance, SNR, and azimuth
 <br>- have much more time to research callers on QRZ, PSKReporter, and LOTW...
+<br><br>Download and run Semmi.msi to install.
