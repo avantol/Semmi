@@ -16,4 +16,6 @@ Semmi is your assistant for WSJT-X (the extremely popular amateur radio weak-sig
 <br>- reply automatically to CQs from any countries you worked but have not QSL'd yet
 <br>- view all stored CQ details: country, continent, distance, SNR, and azimuth
 <br>- have much more time to research callers on QRZ, PSKReporter, and LOTW...
+<br><br>Note: Semmi is a bit fussy about the WSJT-X configuration, and will let you know what to watch out for.
+<br>If it's all a bit too much for you, use "<a href="https://github.com/avantol/Otto">Otto</a>", which is much better integrated with (a modified) WSJT-X. 
 
