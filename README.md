@@ -1,5 +1,6 @@
 # Semmi
-Semmi, the (experimental) WSJT-X helper with limited automation features, for those hams who prefer a partially manual approach to FT8, and who appreciate useful decision support information.
+Semmi is your assistant for WSJT-X (the extremely popular amateur radio weak-signal digital modes program).
+<br>This (experimental) helper program has limited automation features, for those operators who prefer a manual approach to FT8, and also appreciate useful decision support.
 <br><br>Download and run <b>Semmi.msi</b> (above) to install:
 https://github.com/avantol/Semmi/blob/main/Semmi.msi
 <br><br><i><b>Use all appropriate caution since transmit can start at any time once you select "Enable auto-reply"!!! Whenever the "Enable auto-reply" button is green, your antenna can be energized.</b></i>
