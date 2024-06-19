@@ -148,6 +148,7 @@ namespace WSJTX_Controller
         private string pathWsjtx;
         private bool isLogDlg = false;
         int prevCallListBoxSelectedIndex = -1;
+        private bool wsjtxRunning = false;
 
         private struct UdpState
         {
@@ -217,8 +218,8 @@ namespace WSJTX_Controller
 
             DebugOutput($"{Time()} NegoState:{WsjtxMessage.NegoState}");
             DebugOutput($"{Time()} opMode:{opMode}");
-            DebugOutput($"{Time()} Waiting for WSJT-X to run...");
 
+            wsjtxRunning = IsWsjtxRunning();
             ShowStatus();
             ShowQueue();
             ShowLogged();
@@ -385,7 +386,7 @@ namespace WSJTX_Controller
                             return;
                         }
 
-                        if (changed)
+                        if (changed || (!overrideUdpDetect && !DetectUdpSettings(out ipAddress, out port, out multicast)))
                         {
                             heartbeatRecdTimer.Stop();
                             suspendComm = true;
@@ -393,7 +394,8 @@ namespace WSJTX_Controller
                             ctrl.BringToFront();
                             Console.Beep();
 
-                            ctrl.closeLabel.Text = $"{pgmName} needs to adjust WSJT-X settings.\nClose then restart WSJT-X.\n\nNote: To avoid this, start {pgmName} before WSJT-X and don't change certain WSJT-Xsettings (see 'Helpful tips').";
+                            string s = changed ? "\n\nNote: To avoid this, start {pgmName} before WSJT-X and don't change certain WSJT-X settings (see 'Helpful tips')." : "";
+                            ctrl.closeLabel.Text = $"{pgmName} needs to adjust WSJT-X settings.\nClose then restart WSJT-X.{s}";
                             ctrl.closeLabel.Visible = true;
                             ctrl.closeLabel.BringToFront();
                             waitWsjtxClose = true;
@@ -1460,7 +1462,8 @@ namespace WSJTX_Controller
             cmdCheckTimer.Stop();
             DebugOutput($"\n{Time()} ResetNego, NegoState:{WsjtxMessage.NegoState}");
             ResetOpMode(false);
-            DebugOutput($"{Time()} Waiting for WSJT-X to run...");
+            string s = wsjtxRunning ? "reply" : "start";
+            DebugOutput($"{Time()} Waiting for WSJT-X to {s}...");
             commConfirmed = false;
             mode = "";
             ShowStatus();
@@ -1878,7 +1881,7 @@ namespace WSJTX_Controller
             {
                 if (WsjtxMessage.NegoState == WsjtxMessage.NegoStates.WAIT)
                 {
-                    status = "Waiting for WSJT-X...";
+                    status = wsjtxRunning ? "Waiting for WSJT-X to reply..." : "Waiting for WSJT-X to start...";
                     foreColor = Color.Black;
                     backColor = Color.Orange;
                     return;
@@ -3037,7 +3040,7 @@ namespace WSJTX_Controller
         {
             string file = "WSJT-X.lock";
             string pathFileNameExt = $"{Path.GetTempPath()}{file}";
-            return File.Exists(pathFileNameExt);
+            return (wsjtxRunning = File.Exists(pathFileNameExt));
         }
 
         //must call only when in WAIT state
