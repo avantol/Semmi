@@ -1,7 +1,7 @@
 # Semmi
 Semmi is your assistant for WSJT-X (the extremely popular amateur radio weak-signal digital modes program).
 <br>This (experimental) helper program has limited automation features, for those operators who prefer a manual approach to FT8, and also appreciate useful decision support.
-<br><br>Download <img src="https://github.com/avantol/Semmi/blob/main/dl.JPG"> and run <b>Semmi.msi</b> (above) to install: https://github.com/avantol/Semmi/blob/main/Semmi.msi
+<br><br>Click here > <b>https://github.com/avantol/Semmi/blob/main/Semmi.msi</b> (also above), then download <img src="https://github.com/avantol/Semmi/blob/main/dl.JPG"> and run <b>Semmi.msi</b> to install.
 <br>At the Windows warning message, click "More info" then "Run anyway".
 <br><br><i><b>Use all appropriate caution since transmit can start at any time once you select "Enable auto-reply"!!! Whenever the "Enable auto-reply" button is green, your antenna can be energized.</b></i>
 <br><br>Semmi runs alongside your existing version of WSJT-X (must use Windows 10 or later for reliability).
