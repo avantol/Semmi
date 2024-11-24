@@ -1,8 +1,9 @@
 # Semmi
 Semmi is your assistant for WSJT-X (the extremely popular amateur radio weak-signal digital modes program).
 <br>This (experimental) helper program has limited automation features, for those operators who:
-<br>- prefer more of a manual approach to initiating FT8 QSOs, or
-<br>- prefer to use any version(s) of WSJT-X
+<br>- prefer more of a manual approach to FT8 QSOs, or
+<br>- must use only official version(s) of WSJT-X, or
+<br>- are satisfied to only answer CQs (instead of calling CQ)
 <br> and also appreciate useful decision support and call management.
 <br><br>Click here > <b>https://github.com/avantol/Semmi/blob/main/Semmi.msi</b> (also above), then download <img src="https://github.com/avantol/Semmi/blob/main/dl.JPG"> and run <b>Semmi.msi</b> to install.
 <br>At the Windows warning message, click "More info" then "Run anyway".
