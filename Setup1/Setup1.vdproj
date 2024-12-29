@@ -427,15 +427,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Semmi"
-        "ProductCode" = "8:{67499F88-B115-4463-8A4D-94E85CE045A3}"
-        "PackageCode" = "8:{6FFEA874-3BC6-4222-BB21-77A419440986}"
+        "ProductCode" = "8:{BCA401AE-074E-405F-B4FC-0A1875F27438}"
+        "PackageCode" = "8:{4121C29C-2156-4142-9BF9-4A550692D5B0}"
         "UpgradeCode" = "8:{76F77398-AAB1-4DFC-A487-DD708F823D53}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.54.0"
+        "ProductVersion" = "8:1.55.0"
         "Manufacturer" = "8:WM8Q"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -977,7 +977,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_13955C8D95C14416A597653571C6CA17"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\WSJTX_Controller\\obj\\Debug\\Semmi.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_F9097703E65145C3AE3E9348ED10AEA6"
