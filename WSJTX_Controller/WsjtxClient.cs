@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WsjtxUdpLib.Messages;
 using WsjtxUdpLib.Messages.Out;
+using KK5JY.Geo;
 
 namespace WSJTX_Controller
 {
@@ -111,6 +112,7 @@ namespace WSJTX_Controller
         private const string spacer = "           *";
         private const int freqChangeThreshold = 200;
         private bool firstDecodePass = true;
+        DateTime decodeEndTime = DateTime.MaxValue;
         private bool skipFirstDecodeSeries = true;
         private System.Windows.Forms.Timer postDecodeTimer = new System.Windows.Forms.Timer();
         private System.Windows.Forms.Timer processDecodeTimer = new System.Windows.Forms.Timer();
@@ -230,7 +232,6 @@ namespace WSJTX_Controller
             ctrl.verLabel2.Text = "more.avantol@xoxy.net";
             ctrl.verLabel3.Text = "Comments? Click:";
 
-            postDecodeTimer.Interval = 4000;
             postDecodeTimer.Tick += new System.EventHandler(ProcessPostDecodeTimerTick);
 
             processDecodeTimer.Tick += new System.EventHandler(ProcessDecodeTimerTick);
@@ -720,25 +721,27 @@ namespace WSJTX_Controller
                         {
                             if (decoding)
                             {
-                                postDecodeTimer.Stop();
-                                postDecodeTimer.Start();                    //restart timer at every decode, will time out after last decode
-                                DebugOutput($"{spacer}postDecodeTimer.Enabled:{postDecodeTimer.Enabled}");
-
                                 if (firstDecodePass)
                                 {
+                                    firstDecodePass = false;
+                                    DebugOutput($"{spacer}firstDecodePass:{firstDecodePass}");
+                                    decodeEndTime = DateTime.UtcNow + new TimeSpan(0, 0, ((int)(trPeriod * 0.50) / 1000));
+                                    DebugOutput($"{spacer}decodeEndTime:{decodeEndTime.ToString("HHmmss.fff")}");
                                 }
                             }
                             else
                             {
                                 if (lastDecoding != null)           //need to start with decoding = true
                                 {
-                                    if (firstDecodePass)
+                                    if (!postDecodeTimer.Enabled)
                                     {
-                                        firstDecodePass = false;
-                                        DebugOutput($"{spacer}firstDecodePass:{firstDecodePass}");
+                                        postDecodeTimer.Interval = 500;
+                                        postDecodeTimer.Start();                    //restart timer at every decode end, will time out after last decode
+                                        DebugOutput($"{spacer}postDecodeTimer.Enabled:{postDecodeTimer.Enabled}");
                                     }
                                 }
                             }
+                            UpdateDebug();
                         }
                         lastDecoding = decoding;
                     }
@@ -1052,17 +1055,20 @@ namespace WSJTX_Controller
                     //*************************
                     //detect decoding start/end
                     //*************************
-                    if (smsg.Decoding != lastDecoding)
+                    if (decoding != lastDecoding)
                     {
-                        if (smsg.Decoding)
+                        if (decoding)
                         {
-                            postDecodeTimer.Stop();
-                            postDecodeTimer.Start();                    //restart timer at every decode, will time out after last decode
                             string newLn = firstDecodePass ? "\n" : "";
-                            DebugOutput($"{newLn}{Time()} WSJT-X event, firstDecodePass:{firstDecodePass}, postDecodeTimer.Enabled:{postDecodeTimer.Enabled} processDecodeTimer.Enabled:{processDecodeTimer.Enabled}");
+                            DebugOutput($"{newLn}{Time()} WSJT-X event, Decode start, firstDecodePass:{firstDecodePass}, postDecodeTimer.Enabled:{postDecodeTimer.Enabled} processDecodeTimer.Enabled:{processDecodeTimer.Enabled}");
+
                             if (firstDecodePass)
                             {
-                                if (!processDecodeTimer.Enabled && trPeriod != null)           //was not started at end of last xmit, use first decode instead
+                                firstDecodePass = false;
+                                DebugOutput($"{spacer}firstDecodePass:{firstDecodePass}");
+                                decodeEndTime = dtNow;
+
+                                if (trPeriod != null)           //was not started at end of last xmit, use first decode instead
                                 {
                                     int msec = (dtNow.Second * 1000) + dtNow.Millisecond;
                                     int diffMsec = msec % (int)trPeriod;
@@ -1071,23 +1077,29 @@ namespace WSJTX_Controller
                                     DebugOutput($"{spacer}msec:{msec} diffMsec:{diffMsec} interval:{interval} cycleTimerAdj:{cycleTimerAdj}");
                                     if (interval > 0)
                                     {
-                                        processDecodeTimer.Interval = interval;
-                                        processDecodeTimer.Start();
-                                        DebugOutput($"{spacer}processDecodeTimer start");
+                                        if (!processDecodeTimer.Enabled)
+                                        {
+                                            processDecodeTimer.Interval = interval;
+                                            processDecodeTimer.Start();
+                                            DebugOutput($"{spacer}processDecodeTimer start");
+                                        }
                                     }
+                                    decodeEndTime = dtNow + new TimeSpan(0, 0, ((int)((trPeriod * 0.65) + interval) / 1000));
                                 }
+                                DebugOutput($"{spacer}decodeEndTime:{decodeEndTime.ToString("HHmmss.fff")}");
                             }
                         }
                         else
                         {
                             DebugOutput($"{Time()} WSJT-X event, Decode end");
-                            if (firstDecodePass)
+                            if (!postDecodeTimer.Enabled)
                             {
-                                firstDecodePass = false;
-                                DebugOutput($"{spacer}firstDecodePass:{firstDecodePass}");
+                                postDecodeTimer.Interval = 500;
+                                postDecodeTimer.Start();
+                                DebugOutput($"{spacer}postDecodeTimer.Enabled:{postDecodeTimer.Enabled}");
                             }
                         }
-                        lastDecoding = smsg.Decoding;
+                        lastDecoding = decoding;
                     }
 
                     //*******************************
@@ -2235,6 +2247,12 @@ namespace WSJTX_Controller
 
                 ctrl.label21.Text = $"replyCmd: {replyCmd}";
 
+                ctrl.label22.Text = $"firstDec: {firstDecodePass.ToString().Substring(0, 1)}";
+
+                ctrl.label19.Text = $"postDecTmr: {postDecodeTimer.Enabled.ToString().Substring(0, 1)}";
+
+                ctrl.label15.Text = $"decoding: {decoding.ToString().Substring(0, 1)}";
+
                 if (chg)
                 {
                     ctrl.debugHighlightTimer.Stop();
@@ -2626,7 +2644,7 @@ namespace WSJTX_Controller
 
         private void ProcessPostDecodeTimerTick(object sender, EventArgs e)
         {
-            DecodesCompleted();
+            CheckDecodesCompleted();
         }
 
         private void ProcessDecodeTimerTick(object sender, EventArgs e)
@@ -2637,8 +2655,11 @@ namespace WSJTX_Controller
         }
 
         //the last decode pass has completed, ready to detect first decode pass
-        private void DecodesCompleted()
+        private void CheckDecodesCompleted()
         {
+            if (DateTime.UtcNow < decodeEndTime) 
+                return;
+
             postDecodeTimer.Stop();
             DebugOutput($"\n{Time()} Last decode completed, postDecodeTimer.Enabled:{postDecodeTimer.Enabled} firstDecodePass:{firstDecodePass} NegoState:{WsjtxMessage.NegoState}");
             firstDecodePass = true;
@@ -2960,6 +2981,7 @@ namespace WSJTX_Controller
             string quickCall = "";
             string forceCallFirst = "";
             string promptToLog = "";
+            string autoLog = "";
             string acceptUDPRequests = "";
             string txDisable = "";
             string respondCQ = "";
@@ -3000,6 +3022,13 @@ namespace WSJTX_Controller
                 if (promptToLog != "true")
                 {
                     if (readWrite) iniFile.Write("PromptToLog", "true", section);
+                    chgd = true;
+                }
+
+                if (iniFile.KeyExists("AutoLog", section)) autoLog = (iniFile.Read("AutoLog", section)).ToLower();
+                if (autoLog != "false")
+                {
+                    if (readWrite) iniFile.Write("AutoLog", "false", section);
                     chgd = true;
                 }
 
@@ -3421,9 +3450,12 @@ namespace WSJTX_Controller
 
             if (grid != null && grid != "")
             {
-                km = (int)(MaidenheadLocator.Distance(grid, myGrid) + 0.5);
+                double azFrom, azTo, dst;
+                GridSquares.CalculateDistanceAndBearing(myGrid, grid, out azFrom, out azTo, out dst);
+                km = (int)(dst + 0.5);
                 miles = (int)((km + 0.5) / 1.609);
-                azimuth = (int)(MaidenheadLocator.Azimuth(grid, myGrid));
+                azimuth = (int)(azFrom);
+
             }
         }
 
@@ -3451,25 +3483,25 @@ namespace WSJTX_Controller
                 qList.Add(qsoEntry);
             }
 
-            List<string> bList = new List<string>();
-            if (!bandDict.TryGetValue(dxCall, out bList))
-            {
-                bList = new List<string>();
-                bList.Add(band);
-                bandDict.Add(dxCall, bList);
-            }
-            else
-            {
-                bList.Add(band);
-            }
-
             string cty;
             Country(dxCall, out cty);
 
             //update country worked and QSL status
-            if (cty != null && !allCountryDict.ContainsKey(cty))    //country not worked yet
+            if (cty != null)    //country not worked yet
             {
-                allCountryDict.Add(cty, null);          //leave QSL status as unknown
+                List<string> bList = new List<string>();
+                if (!bandDict.TryGetValue(cty, out bList))
+                {
+                    bList = new List<string>();
+                    bList.Add(band);
+                    bandDict.Add(cty, bList);
+                }
+                else
+                {
+                    bList.Add(band);
+                }
+
+                if (!allCountryDict.ContainsKey(cty)) allCountryDict.Add(cty, null);          //leave QSL status as unknown
             }
         }
 

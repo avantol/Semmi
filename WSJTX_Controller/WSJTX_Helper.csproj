@@ -68,8 +68,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MaidenheadLocator3.cs" />
     <Compile Include="WindowUtils.cs" />
-    <Compile Include="Grid.cs" />
     <Compile Include="IniFile.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ConfirmDlg.cs">
